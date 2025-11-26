@@ -1,5 +1,4 @@
-import { useTranslations } from 'next-intl';
-import { getLocale } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { ArrowRight01Icon, UserIcon, ShieldKeyIcon } from 'hugeicons-react';
@@ -7,7 +6,7 @@ import Link from 'next/link';
 
 export default async function Home() {
   const locale = await getLocale();
-  const t = useTranslations();
+  const t = await getTranslations();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100 dark:from-gray-950 dark:via-blue-950 dark:to-gray-900">
