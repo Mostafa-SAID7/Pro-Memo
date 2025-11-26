@@ -27,5 +27,32 @@
     "subtitle": "Your modern productivity platform",
     "getStarted": "Get Started",
     "learnMore": "Learn More"
+  },
+  "errors": {
+    "goBack": "Go Back",
+    "goHome": "Go Home",
+    "popularPages": "Popular pages you might be looking for:",
+    "needHelp": "Need help? Contact our support team.",
+    "tryAgain": "Try Again",
+    "400": {
+      "title": "Bad Request",
+      "message": "The request could not be understood by the server"
+    },
+    "401": {
+      "title": "Unauthorized",
+      "message": "You need to be logged in to access this page"
+    },
+    "403": {
+      "title": "Forbidden",
+      "message": "You don't have permission to access this resource"
+    },
+    "404": {
+      "title": "Page Not Found",
+      "message": "The page you're looking for doesn't exist"
+    },
+    "500": {
+      "title": "Server Error",
+      "message": "Something went wrong on our end"
+    }
   }
 }
