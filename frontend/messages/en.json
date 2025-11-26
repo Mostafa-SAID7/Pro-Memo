@@ -1,0 +1,31 @@
+{
+  "common": {
+    "appName": "Pro Memo",
+    "welcome": "Welcome",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "logout": "Logout",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password"
+  },
+  "home": {
+    "title": "Welcome to Pro Memo",
+    "subtitle": "Your modern productivity platform",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  }
+}
