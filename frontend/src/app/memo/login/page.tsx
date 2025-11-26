@@ -98,7 +98,7 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center text-sm">
             <span className="text-gray-600 dark:text-gray-400">{t('auth.noAccount')} </span>
-            <Link href="/auth/register" className="text-primary-500 hover:text-primary-600 font-medium">
+            <Link href="/memo/register" className="text-primary-500 hover:text-primary-600 font-medium">
               {t('auth.signUp')}
             </Link>
           </div>

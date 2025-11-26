@@ -130,7 +130,7 @@ export default function RegisterPage() {
 
           <div className="mt-6 text-center text-sm">
             <span className="text-gray-600 dark:text-gray-400">{t('auth.hasAccount')} </span>
-            <Link href="/auth/login" className="text-primary-500 hover:text-primary-600 font-medium">
+            <Link href="/memo/login" className="text-primary-500 hover:text-primary-600 font-medium">
               {t('auth.signIn')}
             </Link>
           </div>

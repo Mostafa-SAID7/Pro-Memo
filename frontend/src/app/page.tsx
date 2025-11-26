@@ -47,14 +47,14 @@ export default async function Home() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
             <Link
-              href="/auth/login"
+              href="/memo/login"
               className="group flex items-center gap-2 px-8 py-4 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-medium transition-all shadow-lg hover:shadow-xl hover:scale-105"
             >
               {t('home.getStarted')}
               <ArrowRight01Icon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href="/auth/register"
+              href="/memo/register"
               className="flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-xl font-medium transition-all border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg"
             >
               {t('auth.signUp')}
