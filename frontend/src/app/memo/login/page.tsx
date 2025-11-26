@@ -2,36 +2,30 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Mail01Icon, LockPasswordIcon, ArrowRight01Icon } from 'hugeicons-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const t = useTranslations();
+  const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        window.location.href = '/dashboard';
-      } else {
-        alert(data.message || 'Login failed');
-      }
-    } catch (error) {
-      alert('Connection error');
+      await login(email, password);
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -48,6 +42,12 @@ export default function LoginPage() {
             <h1 className="text-3xl font-bold mb-2">{t('auth.signIn')}</h1>
             <p className="text-gray-600 dark:text-gray-400">{t('common.welcome')}</p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -78,12 +78,6 @@ export default function LoginPage() {
                   required
                 />
               </div>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <Link href="/auth/forgot-password" className="text-primary-500 hover:text-primary-600">
-                {t('auth.forgotPassword')}
-              </Link>
             </div>
 
             <button
