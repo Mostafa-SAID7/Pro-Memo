@@ -30,3 +30,23 @@ exports.getUnreadCount = asyncHandler(async (req, res) => {
   const count = await notificationService.getUnreadCount(req.user.id);
   successResponse(res, { count }, 'Unread count retrieved successfully');
 });
+
+exports.getUnreadNotifications = asyncHandler(async (req, res) => {
+  const { data, pagination } = await notificationService.getNotifications(req.user.id, { ...req.query, read: false });
+  successResponse(res, data, 'Unread notifications retrieved successfully', pagination);
+});
+
+exports.clearAllNotifications = asyncHandler(async (req, res) => {
+  const result = await notificationService.clearAllNotifications(req.user.id);
+  successResponse(res, result, 'All notifications cleared successfully');
+});
+
+exports.getPreferences = asyncHandler(async (req, res) => {
+  const preferences = await notificationService.getPreferences(req.user.id);
+  successResponse(res, preferences, 'Notification preferences retrieved successfully');
+});
+
+exports.updatePreferences = asyncHandler(async (req, res) => {
+  const preferences = await notificationService.updatePreferences(req.user.id, req.body);
+  successResponse(res, preferences, 'Notification preferences updated successfully');
+});
