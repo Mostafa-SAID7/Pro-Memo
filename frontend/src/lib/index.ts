@@ -7,6 +7,7 @@ export { analyticsApi } from './analyticsApi';
 export { aiApi } from './aiApi';
 export { notificationApi } from './notificationApi';
 export { searchApi } from './searchApi';
+export { toast } from './toast';
 
 // Re-export types
 export type { User, AuthResponse } from './api';

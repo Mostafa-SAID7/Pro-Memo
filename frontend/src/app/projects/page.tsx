@@ -3,13 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { projectApi, Project } from '@/lib/projectApi';
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { SearchInput } from '@/components/SearchInput';
-import { Badge } from '@/components/Badge';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { EmptyState } from '@/components/EmptyState';
-import { Modal } from '@/components/Modal';
+import { Button, Card, Badge, EmptyState, Modal, Skeleton } from '@/components/UI';
+import { SearchInput } from '@/components/Forms';
 import { toast } from '@/lib/toast';
 import { useAsync } from '@/hooks/useAsync';
 
@@ -38,7 +33,7 @@ export default function ProjectsPage() {
   const handleSearch = (query: string) => {
     const filtered = projects.filter(
       (p) =>
-        p.title.toLowerCase().includes(query.toLowerCase()) ||
+        p.name.toLowerCase().includes(query.toLowerCase()) ||
         p.description?.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredProjects(filtered);
@@ -75,7 +70,18 @@ export default function ProjectsPage() {
   };
 
   if (loading && projects.length === 0) {
-    return <LoadingSpinner fullScreen message="Loading projects..." />;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-8">
+        <div className="max-w-7xl mx-auto">
+          <Skeleton className="h-10 w-48 mb-8" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} className="h-48 rounded-lg" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -146,7 +152,7 @@ export default function ProjectsPage() {
                     className="w-12 h-12 rounded-lg flex items-center justify-center text-white text-xl font-bold"
                     style={{ backgroundColor: project.color }}
                   >
-                    {project.title.charAt(0).toUpperCase()}
+                    {project.name.charAt(0).toUpperCase()}
                   </div>
                   <Badge variant={getStatusColor(project.status)}>
                     {project.status}
@@ -154,7 +160,7 @@ export default function ProjectsPage() {
                 </div>
 
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  {project.title}
+                  {project.name}
                 </h3>
 
                 {project.description && (
@@ -168,7 +174,7 @@ export default function ProjectsPage() {
                     {project.priority}
                   </Badge>
                   <span className="text-gray-500 dark:text-gray-400">
-                    {project.progress}% complete
+                    {project.taskStats ? Math.round((project.taskStats.done / project.taskStats.total) * 100) || 0 : 0}% complete
                   </span>
                 </div>
 
@@ -212,8 +218,14 @@ function CreateProjectModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const [formData, setFormData] = useState({
-    title: '',
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    status: Project['status'];
+    priority: Project['priority'];
+    color: string;
+  }>({
+    name: '',
     description: '',
     status: 'planning',
     priority: 'medium',
@@ -240,12 +252,12 @@ function CreateProjectModal({
     <Modal isOpen={isOpen} onClose={onClose} title="Create New Project">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Title *</label>
+          <label className="block text-sm font-medium mb-1">Name *</label>
           <input
             type="text"
             required
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
           />
         </div>
@@ -265,7 +277,7 @@ function CreateProjectModal({
             <label className="block text-sm font-medium mb-1">Status</label>
             <select
               value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value as Project['status'] })}
               className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
             >
               <option value="planning">Planning</option>
@@ -278,7 +290,7 @@ function CreateProjectModal({
             <label className="block text-sm font-medium mb-1">Priority</label>
             <select
               value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, priority: e.target.value as Project['priority'] })}
               className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
             >
               <option value="low">Low</option>

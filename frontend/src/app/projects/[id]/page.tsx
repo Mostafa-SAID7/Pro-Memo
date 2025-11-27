@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { projectApi, Project } from '@/lib/projectApi';
 import { Task } from '@/lib/projectApi';
-import { Badge } from '@/components/UI/Badge';
-import { SkeletonCard, SkeletonStatCard } from '@/components/UI/Skeleton';
+import { Badge, SkeletonCard, SkeletonStatCard } from '@/components/UI';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -137,7 +136,17 @@ export default function ProjectDetailPage() {
               </h3>
               <div className="space-y-3">
                 {statusTasks.map(task => (
-                  <TaskCard key={task._id} task={task} />
+                  <div key={task._id} className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <h4 className="font-medium text-sm">{task.title}</h4>
+                    {task.description && (
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{task.description}</p>
+                    )}
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant={task.priority === 'urgent' ? 'error' : task.priority === 'high' ? 'warning' : 'default'} size="sm">
+                        {task.priority}
+                      </Badge>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

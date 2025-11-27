@@ -9,11 +9,11 @@ import { useEffect, useState } from 'react';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { formatDistanceToNow } from 'date-fns';
 import { 
-  FileIcon, 
-  TaskIcon, 
+  File01Icon, 
+  Task01Icon, 
   UserIcon, 
-  MessageIcon,
-  CheckmarkCircleIcon,
+  Message01Icon,
+  CheckmarkCircle01Icon,
   Delete02Icon
 } from 'hugeicons-react';
 
@@ -77,21 +77,21 @@ export function ActivityTimeline({ projectId, userId, limit = 20 }: ActivityTime
     switch (action) {
       case 'project_created':
       case 'project_updated':
-        return <FileIcon className="w-5 h-5 text-blue-500" />;
+        return <File01Icon className="w-5 h-5 text-blue-500" />;
       case 'task_created':
       case 'task_updated':
-        return <TaskIcon className="w-5 h-5 text-green-500" />;
+        return <Task01Icon className="w-5 h-5 text-green-500" />;
       case 'task_status_changed':
-        return <CheckmarkCircleIcon className="w-5 h-5 text-purple-500" />;
+        return <CheckmarkCircle01Icon className="w-5 h-5 text-purple-500" />;
       case 'task_assigned':
         return <UserIcon className="w-5 h-5 text-orange-500" />;
       case 'comment_added':
-        return <MessageIcon className="w-5 h-5 text-indigo-500" />;
+        return <Message01Icon className="w-5 h-5 text-indigo-500" />;
       case 'task_deleted':
       case 'project_deleted':
         return <Delete02Icon className="w-5 h-5 text-red-500" />;
       default:
-        return <FileIcon className="w-5 h-5 text-gray-500" />;
+        return <File01Icon className="w-5 h-5 text-gray-500" />;
     }
   };
 

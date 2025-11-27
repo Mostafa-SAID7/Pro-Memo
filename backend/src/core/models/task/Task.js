@@ -65,10 +65,9 @@ const taskSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Indexes
+// Compound indexes (single field indexes are created by index: true in schema)
 taskSchema.index({ project: 1, status: 1 });
 taskSchema.index({ assignee: 1, status: 1 });
-taskSchema.index({ dueDate: 1 });
 taskSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Task', taskSchema);

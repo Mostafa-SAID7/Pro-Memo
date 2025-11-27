@@ -5,7 +5,7 @@
 'use client';
 
 import { Task } from '@/lib/projectApi';
-import { Badge } from './Badge';
+import { Badge } from '../UI/Badge';
 import { formatRelativeTime } from '@/utils/format';
 
 interface TaskCardProps {

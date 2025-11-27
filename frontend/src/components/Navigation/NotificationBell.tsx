@@ -5,8 +5,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Dropdown, DropdownItem, DropdownDivider } from './Dropdown';
-import { Badge } from './Badge';
+import { Dropdown } from '../UI/Dropdown';
+import { Badge } from '../UI/Badge';
 import { formatRelativeTime } from '@/utils/format';
 
 interface Notification {

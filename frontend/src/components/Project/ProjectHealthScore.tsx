@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { Activity01Icon, AlertCircleIcon, CheckmarkCircleIcon } from 'hugeicons-react';
+import { Activity01Icon, AlertCircleIcon, CheckmarkCircle01Icon } from 'hugeicons-react';
 
 interface HealthFactor {
   factor: string;
@@ -72,7 +72,7 @@ export function ProjectHealthScore({ projectId }: ProjectHealthScoreProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'healthy':
-        return <CheckmarkCircleIcon className="w-6 h-6" />;
+        return <CheckmarkCircle01Icon className="w-6 h-6" />;
       case 'needs-attention':
       case 'at-risk':
         return <Activity01Icon className="w-6 h-6" />;

@@ -116,8 +116,10 @@ class ApiClient {
       throw new Error(data.message || 'Registration failed');
     }
 
-    this.setToken(data.token);
-    return data;
+    // Handle wrapped response from backend
+    const result = data.data || data;
+    this.setToken(result.token);
+    return { success: true, token: result.token, user: result.user };
   }
 
   async login(email: string, password: string): Promise<AuthResponse> {
@@ -133,8 +135,10 @@ class ApiClient {
       throw new Error(data.message || 'Login failed');
     }
 
-    this.setToken(data.token);
-    return data;
+    // Handle wrapped response from backend
+    const result = data.data || data;
+    this.setToken(result.token);
+    return { success: true, token: result.token, user: result.user };
   }
 
   async getCurrentUser(): Promise<User> {
@@ -149,7 +153,8 @@ class ApiClient {
       throw new Error(data.message || 'Failed to fetch user');
     }
 
-    return data;
+    // Handle wrapped response from backend
+    return data.data || data;
   }
 
   async updateProfile(name: string, email: string): Promise<User> {

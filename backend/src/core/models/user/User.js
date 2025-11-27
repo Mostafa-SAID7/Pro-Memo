@@ -41,8 +41,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Indexes
-userSchema.index({ email: 1 });
+// Indexes (email index is created by unique: true)
 userSchema.index({ role: 1 });
 userSchema.index({ createdAt: -1 });
 

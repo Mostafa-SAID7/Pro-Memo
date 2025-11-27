@@ -3,7 +3,7 @@
 import { ThemeProvider } from 'next-themes';
 import { ReactNode } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { CommandPalette } from '@/components/CommandPalette';
+import { CommandPalette } from '@/components/Search';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (

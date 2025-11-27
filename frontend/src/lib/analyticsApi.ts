@@ -141,4 +141,40 @@ export const analyticsApi = {
     const data = await response.json();
     return data.data || data;
   },
+
+  // Get dashboard overview
+  async getDashboardOverview(): Promise<any> {
+    const response = await fetch(`${API_URL}/api/v1/analytics/overview`, {
+      headers: {
+        'Authorization': `Bearer ${api.getToken()}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch dashboard overview');
+    }
+
+    const data = await response.json();
+    return data.data || data;
+  },
+
+  // Get user analytics
+  async getUserAnalytics(): Promise<any> {
+    const response = await fetch(`${API_URL}/api/v1/analytics/user`, {
+      headers: {
+        'Authorization': `Bearer ${api.getToken()}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch user analytics');
+    }
+
+    const data = await response.json();
+    return data.data || data;
+  },
 };

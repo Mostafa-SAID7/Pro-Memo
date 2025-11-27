@@ -142,12 +142,129 @@ class AnalyticsService {
   }
 
   async getTrends(userId, period = 'daily') {
-    // Simplified trends - returns mock data structure
+    const now = new Date();
+    const days = period === 'monthly' ? 30 : period === 'weekly' ? 7 : 7;
+    const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
+    const tasks = await Task.aggregate([
+      {
+        $match: {
+          $or: [{ creator: userId }, { assignee: userId }],
+          createdAt: { $gte: startDate }
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+          created: { $sum: 1 },
+          completed: { $sum: { $cond: [{ $eq: ['$status', 'done'] }, 1, 0] } }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
     return {
-      daily: [],
-      weekly: [],
-      monthly: []
+      [period]: tasks.map(t => ({
+        date: t._id,
+        created: t.created,
+        completed: t.completed
+      }))
     };
+  }
+
+  async getUserAnalytics(userId, options = {}) {
+    const { startDate, endDate } = options;
+    
+    const matchQuery = { $or: [{ creator: userId }, { assignee: userId }] };
+    if (startDate) matchQuery.createdAt = { $gte: new Date(startDate) };
+    if (endDate) {
+      matchQuery.createdAt = matchQuery.createdAt || {};
+      matchQuery.createdAt.$lte = new Date(endDate);
+    }
+
+    const [tasksByStatus, tasksByProject, completionTrend] = await Promise.all([
+      Task.aggregate([
+        { $match: matchQuery },
+        { $group: { _id: '$status', count: { $sum: 1 } } }
+      ]),
+      Task.aggregate([
+        { $match: matchQuery },
+        { $lookup: { from: 'projects', localField: 'project', foreignField: '_id', as: 'projectInfo' } },
+        { $unwind: { path: '$projectInfo', preserveNullAndEmptyArrays: true } },
+        { $group: { _id: '$projectInfo.name', count: { $sum: 1 } } }
+      ]),
+      Task.aggregate([
+        { $match: { ...matchQuery, status: 'done' } },
+        { $group: { 
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$updatedAt' } },
+          count: { $sum: 1 }
+        }},
+        { $sort: { _id: -1 } },
+        { $limit: 7 }
+      ])
+    ]);
+
+    const statusMap = {};
+    tasksByStatus.forEach(s => statusMap[s._id] = s.count);
+
+    const projectMap = {};
+    tasksByProject.forEach(p => projectMap[p._id || 'Unassigned'] = p.count);
+
+    const trendMap = {};
+    completionTrend.forEach(t => trendMap[t._id] = t.count);
+
+    const total = Object.values(statusMap).reduce((a, b) => a + b, 0);
+    const completed = statusMap['done'] || 0;
+    const inProgress = statusMap['in-progress'] || 0;
+
+    return {
+      tasksByStatus: statusMap,
+      tasksByProject: projectMap,
+      completionTrend: trendMap,
+      summary: {
+        completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+        inProgressTasks: inProgress,
+        avgCompletionTime: 3.5 // Placeholder
+      }
+    };
+  }
+
+  async getDashboardOverview(userId) {
+    const stats = await this.getDashboardStats(userId);
+    const productivity = await this.getProductivityMetrics(userId);
+    
+    return {
+      metrics: {
+        totalProjects: stats.totalProjects,
+        totalTasks: stats.totalTasks,
+        completedTasks: stats.completedTasks,
+        inProgressTasks: stats.pendingTasks,
+        overdueTasks: stats.overdueTasks,
+        upcomingDeadlines: 0
+      },
+      productivity
+    };
+  }
+
+  async getTeamAnalytics(projectId, userId) {
+    const project = await Project.findById(projectId).populate('members.user', 'name email');
+    if (!project) return null;
+
+    const memberStats = await Promise.all(
+      project.members.map(async (member) => {
+        const tasks = await Task.countDocuments({ project: projectId, assignee: member.user._id });
+        const completed = await Task.countDocuments({ project: projectId, assignee: member.user._id, status: 'done' });
+        return {
+          user: member.user,
+          role: member.role,
+          totalTasks: tasks,
+          completedTasks: completed,
+          completionRate: tasks > 0 ? Math.round((completed / tasks) * 100) : 0
+        };
+      })
+    );
+
+    return { members: memberStats };
   }
 }
 

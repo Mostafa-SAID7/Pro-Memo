@@ -5,8 +5,8 @@
 'use client';
 
 import { Project } from '@/lib/projectApi';
-import { Badge } from './Badge';
-import { Progress } from './Progress';
+import { Badge } from '../UI/Badge';
+import { Progress } from '../UI/Progress';
 import Link from 'next/link';
 
 interface ProjectCardProps {

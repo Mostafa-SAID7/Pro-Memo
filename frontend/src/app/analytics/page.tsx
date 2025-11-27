@@ -9,8 +9,7 @@ import { analyticsApi } from '@/lib/analyticsApi';
 import { PieChart } from '@/components/Charts/PieChart';
 import { BarChart } from '@/components/Charts/BarChart';
 import { LineChart } from '@/components/Charts/LineChart';
-import { Card } from '@/components/Card';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { Card, Skeleton } from '@/components/UI';
 
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
@@ -39,8 +38,15 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <Skeleton className="h-10 w-64" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-32 rounded-lg" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

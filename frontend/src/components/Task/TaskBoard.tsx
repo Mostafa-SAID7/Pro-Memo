@@ -18,15 +18,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { TaskCard } from './TaskCard';
 import { projectApi } from '@/lib/projectApi';
 
-interface Task {
-  _id: string;
-  title: string;
-  description?: string;
-  status: string;
-  priority: string;
-  assignee?: any;
-  dueDate?: string;
-}
+import { Task } from '@/lib/projectApi';
 
 interface TaskBoardProps {
   projectId: string;
@@ -88,13 +80,13 @@ export function TaskBoard({ projectId }: TaskBoardProps) {
     // Update local state optimistically
     setTasks(prev =>
       prev.map(task =>
-        task._id === taskId ? { ...task, status: newStatus } : task
+        task._id === taskId ? { ...task, status: newStatus as Task['status'] } : task
       )
     );
 
     // Update on server
     try {
-      await projectApi.updateTask(taskId, { status: newStatus });
+      await projectApi.updateTask(taskId, { status: newStatus as Task['status'] });
     } catch (error) {
       console.error('Failed to update task:', error);
       // Revert on error

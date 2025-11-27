@@ -6,7 +6,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search01Icon, FileIcon, TaskIcon, UserIcon, SettingsIcon } from 'hugeicons-react';
+import { Search01Icon, File01Icon, Task01Icon, UserIcon, Settings01Icon } from 'hugeicons-react';
 import { searchApi } from '@/lib/searchApi';
 
 interface Command {
@@ -29,21 +29,21 @@ export function CommandPalette() {
     {
       id: 'new-project',
       title: 'New Project',
-      icon: <FileIcon className="w-5 h-5" />,
+      icon: <File01Icon className="w-5 h-5" />,
       action: () => router.push('/projects/new'),
       category: 'Actions',
     },
     {
       id: 'new-task',
       title: 'New Task',
-      icon: <TaskIcon className="w-5 h-5" />,
+      icon: <Task01Icon className="w-5 h-5" />,
       action: () => router.push('/tasks/new'),
       category: 'Actions',
     },
     {
       id: 'settings',
       title: 'Settings',
-      icon: <SettingsIcon className="w-5 h-5" />,
+      icon: <Settings01Icon className="w-5 h-5" />,
       action: () => router.push('/settings'),
       category: 'Navigation',
     },
@@ -56,34 +56,19 @@ export function CommandPalette() {
     }
 
     try {
-      const results = await searchApi.globalSearch(searchQuery, 'all', 10);
+      const results = await searchApi.globalSearch(searchQuery);
       
-      const searchResults: Command[] = [
-        ...results.projects.map(project => ({
-          id: `project-${project._id}`,
-          title: project.name,
-          subtitle: project.description,
-          icon: <FileIcon className="w-5 h-5" />,
-          action: () => router.push(`/projects/${project._id}`),
-          category: 'Projects',
-        })),
-        ...results.tasks.map(task => ({
-          id: `task-${task._id}`,
-          title: task.title,
-          subtitle: task.project?.name,
-          icon: <TaskIcon className="w-5 h-5" />,
-          action: () => router.push(`/tasks/${task._id}`),
-          category: 'Tasks',
-        })),
-        ...results.users.map(user => ({
-          id: `user-${user._id}`,
-          title: user.name,
-          subtitle: user.email,
-          icon: <UserIcon className="w-5 h-5" />,
-          action: () => router.push(`/users/${user._id}`),
-          category: 'Users',
-        })),
-      ];
+      const searchResults: Command[] = results.map((result: any) => ({
+        id: `${result.type}-${result._id}`,
+        title: result.name || result.title,
+        subtitle: result.description,
+        icon: result.type === 'project' ? <File01Icon className="w-5 h-5" /> : 
+              result.type === 'task' ? <Task01Icon className="w-5 h-5" /> : 
+              <UserIcon className="w-5 h-5" />,
+        action: () => router.push(`/${result.type}s/${result._id}`),
+        category: result.type === 'project' ? 'Projects' : 
+                  result.type === 'task' ? 'Tasks' : 'Users',
+      }));
 
       setCommands([...defaultCommands, ...searchResults]);
     } catch (error) {

@@ -6,8 +6,8 @@
 
 import { useState } from 'react';
 import { Download01Icon, Upload01Icon } from 'hugeicons-react';
-import { Button } from './Button';
-import { Modal } from './Modal';
+import { Button } from '../UI/Button';
+import { Modal } from '../UI/Modal';
 import { exportApi } from '@/lib/exportApi';
 
 interface ExportImportMenuProps {

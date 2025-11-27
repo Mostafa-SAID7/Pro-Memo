@@ -1,6 +1,5 @@
 import { getTranslations, getLocale } from 'next-intl/server';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { LanguageToggle } from '@/components/LanguageToggle';
+import { ThemeToggle, LanguageToggle } from '@/components/Layout';
 import { ArrowRight01Icon, UserIcon, ShieldKeyIcon } from 'hugeicons-react';
 import Link from 'next/link';
 

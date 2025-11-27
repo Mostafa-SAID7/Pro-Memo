@@ -7,10 +7,32 @@ const Notification = require('../../models/system/Notification');
 const { NotFoundError } = require('../../../shared/errors');
 
 class NotificationService {
-  async getNotifications(userId, limit = 50) {
-    return Notification.find({ user: userId })
-      .sort({ createdAt: -1 })
-      .limit(limit);
+  async getNotifications(userId, options = {}) {
+    const { page = 1, limit = 50, read } = options;
+    const skip = (page - 1) * limit;
+    
+    const query = { user: userId };
+    if (read !== undefined) {
+      query.read = read;
+    }
+    
+    const [data, total] = await Promise.all([
+      Notification.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      Notification.countDocuments(query)
+    ]);
+    
+    return {
+      data,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    };
   }
 
   async getUnreadNotifications(userId) {
@@ -20,6 +42,27 @@ class NotificationService {
 
   async getUnreadCount(userId) {
     return Notification.countDocuments({ user: userId, read: false });
+  }
+
+  async getPreferences(userId) {
+    // Return default preferences - can be extended with a UserPreferences model
+    return {
+      email: true,
+      push: true,
+      taskAssigned: true,
+      taskCompleted: true,
+      taskDueSoon: true,
+      projectUpdates: true,
+      mentions: true
+    };
+  }
+
+  async updatePreferences(userId, preferences) {
+    // Store preferences - can be extended with a UserPreferences model
+    return {
+      ...preferences,
+      updatedAt: new Date()
+    };
   }
 
   async createNotification(data) {

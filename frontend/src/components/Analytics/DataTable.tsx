@@ -5,7 +5,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from './Button';
+import { Button } from '../UI/Button';
 
 interface Column<T> {
   key: keyof T | string;

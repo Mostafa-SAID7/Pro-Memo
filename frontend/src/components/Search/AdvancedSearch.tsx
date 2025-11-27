@@ -6,8 +6,8 @@
 
 import { useState } from 'react';
 import { Search01Icon, FilterIcon, Cancel01Icon } from 'hugeicons-react';
-import { Button } from './Button';
-import { Select } from './Select';
+import { Button } from '../UI/Button';
+import { Select } from '../Forms/Select';
 
 interface AdvancedSearchProps {
   onSearch: (filters: any) => void;

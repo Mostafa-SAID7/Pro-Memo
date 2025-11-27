@@ -22,15 +22,34 @@ class ActivityService {
     return activity;
   }
 
-  // Get activities for a user
-  async getActivities(userId, options = {}) {
-    const { limit = 50, skip = 0 } = options;
+  // Get activities with pagination
+  async getActivities(options = {}) {
+    const { page = 1, limit = 50, userId, entityType, action } = options;
+    const skip = (page - 1) * limit;
     
-    return Activity.find({ user: userId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate('user', 'name email avatar');
+    const query = {};
+    if (userId) query.user = userId;
+    if (entityType) query.entityType = entityType;
+    if (action) query.action = action;
+    
+    const [data, total] = await Promise.all([
+      Activity.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit))
+        .populate('user', 'name email avatar'),
+      Activity.countDocuments(query)
+    ]);
+    
+    return {
+      data,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    };
   }
 
   // Get recent activities
@@ -42,7 +61,8 @@ class ActivityService {
   }
 
   // Get activity feed (includes team activities)
-  async getActivityFeed(userId, projectIds = [], limit = 50) {
+  async getActivityFeed(userId, options = {}) {
+    const { limit = 50, projectIds = [] } = options;
     const query = {
       $or: [
         { user: userId },
@@ -52,44 +72,50 @@ class ActivityService {
     
     return Activity.find(query)
       .sort({ createdAt: -1 })
-      .limit(limit)
+      .limit(parseInt(limit))
       .populate('user', 'name email avatar');
   }
 
   // Get activities for a specific user
-  async getUserActivities(targetUserId, limit = 50) {
+  async getUserActivities(targetUserId, options = {}) {
+    const { limit = 50 } = options;
     return Activity.find({ user: targetUserId })
       .sort({ createdAt: -1 })
-      .limit(limit)
+      .limit(parseInt(limit))
       .populate('user', 'name email avatar');
   }
 
   // Get activities for a project
-  async getProjectActivities(projectId, limit = 50) {
+  async getProjectActivities(projectId, options = {}) {
+    const { limit = 50 } = options;
     return Activity.find({ 
-      entityType: 'project', 
-      entityId: projectId 
+      $or: [
+        { entityType: 'project', entityId: projectId },
+        { 'metadata.projectId': projectId }
+      ]
     })
       .sort({ createdAt: -1 })
-      .limit(limit)
+      .limit(parseInt(limit))
       .populate('user', 'name email avatar');
   }
 
   // Get activities for a task
-  async getTaskActivities(taskId, limit = 50) {
+  async getTaskActivities(taskId, options = {}) {
+    const { limit = 50 } = options;
     return Activity.find({ 
       entityType: 'task', 
       entityId: taskId 
     })
       .sort({ createdAt: -1 })
-      .limit(limit)
+      .limit(parseInt(limit))
       .populate('user', 'name email avatar');
   }
 
   // Get activity stats
-  async getActivityStats(userId, days = 30) {
+  async getActivityStats(userId, options = {}) {
+    const { days = 30 } = options;
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
+    startDate.setDate(startDate.getDate() - parseInt(days));
     
     const activities = await Activity.aggregate([
       {
@@ -118,18 +144,22 @@ class ActivityService {
     };
   }
 
-  // Get activity timeline
-  async getActivityTimeline(userId, days = 7) {
+  // Get activity timeline (alias for getTimeline)
+  async getActivityTimeline(options = {}) {
+    return this.getTimeline(options);
+  }
+
+  // Get timeline
+  async getTimeline(options = {}) {
+    const { days = 7, userId } = options;
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
+    startDate.setDate(startDate.getDate() - parseInt(days));
+    
+    const matchStage = { createdAt: { $gte: startDate } };
+    if (userId) matchStage.user = userId;
     
     const activities = await Activity.aggregate([
-      {
-        $match: {
-          user: userId,
-          createdAt: { $gte: startDate }
-        }
-      },
+      { $match: matchStage },
       {
         $group: {
           _id: {

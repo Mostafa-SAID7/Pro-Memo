@@ -13,6 +13,7 @@ router.use(protect);
 // Dashboard & Overview
 router.get('/dashboard', cache(600), analyticsController.getDashboardStats);
 router.get('/overview', cache(600), analyticsController.getOverview);
+router.get('/user', cache(600), analyticsController.getUserAnalytics);
 
 // Task Analytics
 router.get('/tasks', cache(600), analyticsController.getTaskAnalytics);
