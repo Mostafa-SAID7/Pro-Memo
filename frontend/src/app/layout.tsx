@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import { Providers } from './providers';
+import Footer from '@/components/Footer';
+import ScrollToTop from '@/components/ScrollToTop';
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,11 +33,15 @@ export default async function RootLayout({
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col min-h-screen`}
       >
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            {children}
+            <div className="flex-grow">
+              {children}
+            </div>
+            <Footer />
+            <ScrollToTop />
           </Providers>
         </NextIntlClientProvider>
       </body>
