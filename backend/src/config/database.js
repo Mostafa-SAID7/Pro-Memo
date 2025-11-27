@@ -1,48 +1,34 @@
-// In-memory database (replace with real database later)
-class Database {
-  constructor() {
-    this.users = [];
-  }
+const mongoose = require('mongoose');
 
-  // User operations
-  getAllUsers() {
-    return this.users;
-  }
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/promemo', {
+      // These options are no longer needed in Mongoose 6+
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true,
+    });
 
-  findUserById(id) {
-    return this.users.find(u => u.id === id);
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    console.log(`📊 Database: ${conn.connection.name}`);
+  } catch (error) {
+    console.error(`❌ MongoDB Connection Error: ${error.message}`);
+    process.exit(1);
   }
+};
 
-  findUserByEmail(email) {
-    return this.users.find(u => u.email === email);
-  }
+// Handle connection events
+mongoose.connection.on('disconnected', () => {
+  console.log('⚠️  MongoDB disconnected');
+});
 
-  createUser(userData) {
-    const user = {
-      id: this.users.length + 1,
-      ...userData,
-      createdAt: new Date()
-    };
-    this.users.push(user);
-    return user;
-  }
+mongoose.connection.on('error', (err) => {
+  console.error(`❌ MongoDB error: ${err.message}`);
+});
 
-  updateUser(id, updates) {
-    const user = this.findUserById(id);
-    if (user) {
-      Object.assign(user, updates);
-    }
-    return user;
-  }
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  console.log('MongoDB connection closed through app termination');
+  process.exit(0);
+});
 
-  deleteUser(id) {
-    const index = this.users.findIndex(u => u.id === id);
-    if (index !== -1) {
-      this.users.splice(index, 1);
-      return true;
-    }
-    return false;
-  }
-}
-
-module.exports = new Database();
+module.exports = connectDB;

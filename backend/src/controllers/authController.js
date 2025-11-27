@@ -1,152 +1,179 @@
-const db = require('../config/database');
-const { hashPassword, comparePassword } = require('../utils/password');
+const User = require('../models/User');
 const { generateToken } = require('../utils/jwt');
 
-// Register new user
+// @desc    Register new user
+// @route   POST /api/auth/register
+// @access  Public
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     // Check if user exists
-    const existingUser = db.findUserByEmail(email);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password
-    const hashedPassword = await hashPassword(password);
-
     // Create user
-    const user = db.createUser({
+    const user = await User.create({
       name,
       email,
-      password: hashedPassword
+      password
     });
 
     // Generate token
-    const token = generateToken({ id: user.id, email: user.email });
+    const token = generateToken({ id: user._id, email: user.email });
 
     res.status(201).json({
       token,
       user: {
-        id: user.id,
+        id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt
       }
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Register error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Login user
+// @desc    Login user
+// @route   POST /api/auth/login
+// @access  Public
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
-    const user = db.findUserByEmail(email);
+    // Find user and include password
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(403).json({ message: 'Account is deactivated' });
+    }
+
     // Check password
-    const isMatch = await comparePassword(password, user.password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
     // Generate token
-    const token = generateToken({ id: user.id, email: user.email });
+    const token = generateToken({ id: user._id, email: user.email });
 
     res.json({
       token,
       user: {
-        id: user.id,
+        id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role,
+        lastLogin: user.lastLogin
       }
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get current user
-const getCurrentUser = (req, res) => {
+// @desc    Get current user
+// @route   GET /api/auth/me
+// @access  Private
+const getCurrentUser = async (req, res) => {
   try {
-    const user = db.findUserById(req.user.id);
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     res.json({
-      id: user.id,
+      id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      role: user.role,
+      createdAt: user.createdAt,
+      lastLogin: user.lastLogin
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Get current user error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Update profile
+// @desc    Update profile
+// @route   PUT /api/auth/profile
+// @access  Private
 const updateProfile = async (req, res) => {
   try {
     const { name, email } = req.body;
 
-    const user = db.findUserById(req.user.id);
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Check if email is already taken
-    const existingUser = db.findUserByEmail(email);
-    if (existingUser && existingUser.id !== req.user.id) {
-      return res.status(400).json({ message: 'Email already in use' });
+    if (email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already in use' });
+      }
     }
 
     // Update user
-    const updatedUser = db.updateUser(req.user.id, { name, email });
+    user.name = name || user.name;
+    user.email = email || user.email;
+    await user.save();
 
     res.json({
-      id: updatedUser.id,
-      name: updatedUser.name,
-      email: updatedUser.email
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Update profile error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Change password
+// @desc    Change password
+// @route   POST /api/auth/change-password
+// @access  Private
 const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    const user = db.findUserById(req.user.id);
+    const user = await User.findById(req.user.id).select('+password');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Verify current password
-    const isMatch = await comparePassword(currentPassword, user.password);
+    const isMatch = await user.comparePassword(currentPassword);
     if (!isMatch) {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
-    // Hash new password
-    const hashedPassword = await hashPassword(newPassword);
-    db.updateUser(req.user.id, { password: hashedPassword });
+    // Update password
+    user.password = newPassword;
+    await user.save();
 
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Change password error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 

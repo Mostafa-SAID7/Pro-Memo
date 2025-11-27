@@ -3,7 +3,11 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const authMiddleware = require('../middleware/auth');
 
-// Protected routes
-router.get('/', authMiddleware, userController.getAllUsers);
+// All routes are protected
+router.use(authMiddleware);
+
+router.get('/', userController.getAllUsers);
+router.get('/:id', userController.getUserById);
+router.delete('/:id', userController.deleteUser);
 
 module.exports = router;
