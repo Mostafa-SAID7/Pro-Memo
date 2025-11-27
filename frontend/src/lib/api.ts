@@ -6,20 +6,35 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  role?: string;
+  createdAt?: string;
+  lastLogin?: string;
 }
 
 export interface AuthResponse {
+  success: boolean;
   token: string;
   user: User;
+  message?: string;
 }
 
 export interface ApiError {
+  success: false;
   message: string;
   errors?: any[];
 }
 
+export interface ApiResponse<T = any> {
+  success: boolean;
+  message: string;
+  data?: T;
+  timestamp?: string;
+}
+
 class ApiClient {
   private baseUrl: string;
+  private retryAttempts: number = 3;
+  private retryDelay: number = 1000;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -40,7 +55,36 @@ class ApiClient {
     return headers;
   }
 
-  private getToken(): string | null {
+  private async fetchWithRetry(
+    url: string,
+    options: RequestInit,
+    retries: number = this.retryAttempts
+  ): Promise<Response> {
+    try {
+      const response = await fetch(url, options);
+      
+      // Don't retry on client errors (4xx)
+      if (response.status >= 400 && response.status < 500) {
+        return response;
+      }
+
+      // Retry on server errors (5xx) or network errors
+      if (!response.ok && retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, this.retryDelay));
+        return this.fetchWithRetry(url, options, retries - 1);
+      }
+
+      return response;
+    } catch (error) {
+      if (retries > 0) {
+        await new Promise(resolve => setTimeout(resolve, this.retryDelay));
+        return this.fetchWithRetry(url, options, retries - 1);
+      }
+      throw error;
+    }
+  }
+
+  getToken(): string | null {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('token');
     }
@@ -60,81 +104,88 @@ class ApiClient {
   }
 
   async register(name: string, email: string, password: string): Promise<AuthResponse> {
-    const response = await fetch(`${this.baseUrl}/api/auth/register`, {
+    const response = await this.fetchWithRetry(`${this.baseUrl}/api/auth/register`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ name, email, password }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const error: ApiError = await response.json();
-      throw new Error(error.message || 'Registration failed');
+      throw new Error(data.message || 'Registration failed');
     }
 
-    const data: AuthResponse = await response.json();
     this.setToken(data.token);
     return data;
   }
 
   async login(email: string, password: string): Promise<AuthResponse> {
-    const response = await fetch(`${this.baseUrl}/api/auth/login`, {
+    const response = await this.fetchWithRetry(`${this.baseUrl}/api/auth/login`, {
       method: 'POST',
       headers: this.getHeaders(),
       body: JSON.stringify({ email, password }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const error: ApiError = await response.json();
-      throw new Error(error.message || 'Login failed');
+      throw new Error(data.message || 'Login failed');
     }
 
-    const data: AuthResponse = await response.json();
     this.setToken(data.token);
     return data;
   }
 
   async getCurrentUser(): Promise<User> {
-    const response = await fetch(`${this.baseUrl}/api/auth/me`, {
+    const response = await this.fetchWithRetry(`${this.baseUrl}/api/auth/me`, {
       method: 'GET',
       headers: this.getHeaders(true),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const error: ApiError = await response.json();
-      throw new Error(error.message || 'Failed to fetch user');
+      throw new Error(data.message || 'Failed to fetch user');
     }
 
-    return response.json();
+    return data;
   }
 
   async updateProfile(name: string, email: string): Promise<User> {
-    const response = await fetch(`${this.baseUrl}/api/auth/profile`, {
+    const response = await this.fetchWithRetry(`${this.baseUrl}/api/auth/profile`, {
       method: 'PUT',
       headers: this.getHeaders(true),
       body: JSON.stringify({ name, email }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const error: ApiError = await response.json();
-      throw new Error(error.message || 'Failed to update profile');
+      throw new Error(data.message || 'Failed to update profile');
     }
 
-    return response.json();
+    return data;
   }
 
   async changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
-    const response = await fetch(`${this.baseUrl}/api/auth/change-password`, {
+    const response = await this.fetchWithRetry(`${this.baseUrl}/api/auth/change-password`, {
       method: 'POST',
       headers: this.getHeaders(true),
       body: JSON.stringify({ currentPassword, newPassword }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const error: ApiError = await response.json();
-      throw new Error(error.message || 'Failed to change password');
+      throw new Error(data.message || 'Failed to change password');
     }
 
-    return response.json();
+    return data;
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
   }
 
   logout(): void {
