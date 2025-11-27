@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { bulk: bulkController } = require('../../../controllers');
-const { protect, strictLimiter, clearCache } = require('../../middleware');
+const { protect, strictLimiter, clearCache } = require('../../../middleware');
 
 // All routes require authentication
 router.use(protect);

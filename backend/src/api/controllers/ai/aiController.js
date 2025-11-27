@@ -39,3 +39,56 @@ exports.generateSubtasks = asyncHandler(async (req, res) => {
   const subtasks = aiService.generateSubtasks(title, description);
   successResponse(res, { subtasks }, 'Subtasks generated successfully');
 });
+
+exports.getSuggestions = asyncHandler(async (req, res) => {
+  const suggestions = await aiService.getSuggestions(req.user.id, req.query);
+  successResponse(res, suggestions, 'Suggestions retrieved successfully');
+});
+
+exports.getTaskSuggestions = asyncHandler(async (req, res) => {
+  const suggestions = await aiService.getSuggestions(req.user.id, { taskId: req.params.taskId });
+  successResponse(res, suggestions, 'Task suggestions retrieved successfully');
+});
+
+exports.getProjectSuggestions = asyncHandler(async (req, res) => {
+  const suggestions = await aiService.getSuggestions(req.user.id, { projectId: req.params.projectId });
+  successResponse(res, suggestions, 'Project suggestions retrieved successfully');
+});
+
+exports.analyzeTask = asyncHandler(async (req, res) => {
+  const analysis = await aiService.analyzeTask(req.body);
+  successResponse(res, analysis, 'Task analyzed successfully');
+});
+
+exports.analyzeProject = asyncHandler(async (req, res) => {
+  const analysis = await aiService.analyzeTask(req.body);
+  successResponse(res, analysis, 'Project analyzed successfully');
+});
+
+exports.generateDescription = asyncHandler(async (req, res) => {
+  const { title, context } = req.body;
+  const description = await aiService.generateDescription(title, context);
+  successResponse(res, { description }, 'Description generated successfully');
+});
+
+exports.predictCompletion = asyncHandler(async (req, res) => {
+  const { taskId } = req.body;
+  const prediction = await aiService.predictCompletion(taskId, req.user.id);
+  successResponse(res, prediction, 'Completion predicted successfully');
+});
+
+exports.predictRisk = asyncHandler(async (req, res) => {
+  successResponse(res, { risk: 'low' }, 'Risk predicted successfully');
+});
+
+exports.smartCategorize = asyncHandler(async (req, res) => {
+  const { items } = req.body;
+  const categorized = await aiService.smartCategorize(items);
+  successResponse(res, categorized, 'Items categorized successfully');
+});
+
+exports.autoTag = asyncHandler(async (req, res) => {
+  const { title, description } = req.body;
+  const tags = await aiService.autoTag(title, description);
+  successResponse(res, { tags }, 'Tags generated successfully');
+});

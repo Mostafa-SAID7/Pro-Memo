@@ -2,13 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { projectApi, Project, Task } from '@/lib/projectApi';
-import { TaskCard } from '@/components/TaskCard';
-import { Badge } from '@/components/Badge';
-import { Button } from '@/components/Button';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { toast } from '@/lib/toast';
-import { Tabs } from '@/components/Tabs';
+import { projectApi, Project } from '@/lib/projectApi';
+import { Task } from '@/lib/projectApi';
+import { Badge } from '@/components/UI/Badge';
+import { SkeletonCard, SkeletonStatCard } from '@/components/UI/Skeleton';
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -27,8 +24,8 @@ export default function ProjectDetailPage() {
     try {
       const data = await projectApi.getProjectById(params.id as string);
       setProject(data);
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      console.error('Failed to load project:', error);
     } finally {
       setLoading(false);
     }
@@ -38,13 +35,38 @@ export default function ProjectDetailPage() {
     try {
       const { data } = await projectApi.getTasks({ projectId: params.id as string });
       setTasks(data);
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      console.error('Failed to load tasks:', error);
     }
   };
 
   if (loading) {
-    return <LoadingSpinner fullScreen message="Loading project..." />;
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <div className="h-8 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
+            <div className="h-4 w-96 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <SkeletonStatCard key={i} />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="bg-gray-100 dark:bg-gray-900 rounded-lg p-4">
+                <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4" />
+                <div className="space-y-3">
+                  <SkeletonCard />
+                  <SkeletonCard />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!project) {

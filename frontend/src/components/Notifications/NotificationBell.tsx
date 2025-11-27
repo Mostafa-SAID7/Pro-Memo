@@ -59,7 +59,17 @@ export function NotificationBell() {
 
           <div className="max-h-96 overflow-y-auto">
             {loading ? (
-              <div className="p-4 text-center text-gray-500">Loading...</div>
+              <div className="p-2 space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="p-3 flex gap-3">
+                    <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="w-3/4 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : notifications.length > 0 ? (
               notifications.slice(0, 10).map(notif => (
                 <div

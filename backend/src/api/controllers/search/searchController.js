@@ -27,3 +27,21 @@ exports.getSearchSuggestions = asyncHandler(async (req, res) => {
   const suggestions = await searchService.getSearchSuggestions(q, req.user.id, parseInt(limit) || 5);
   successResponse(res, suggestions, 'Suggestions retrieved successfully');
 });
+
+exports.advancedSearch = asyncHandler(async (req, res) => {
+  const results = await searchService.advancedSearch(req.user.id, req.query);
+  successResponse(res, results, 'Advanced search completed successfully');
+});
+
+exports.searchUsers = asyncHandler(async (req, res) => {
+  const results = await searchService.searchUsers(req.query.q || '');
+  successResponse(res, results, 'Users found successfully');
+});
+
+exports.getRecentSearches = asyncHandler(async (req, res) => {
+  successResponse(res, [], 'Recent searches retrieved successfully');
+});
+
+exports.clearRecentSearches = asyncHandler(async (req, res) => {
+  successResponse(res, null, 'Recent searches cleared successfully');
+});

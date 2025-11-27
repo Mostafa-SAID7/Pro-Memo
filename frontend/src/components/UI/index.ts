@@ -10,7 +10,6 @@ export { Alert } from './Alert';
 export { Modal } from './Modal';
 export { Tooltip } from './Tooltip';
 export { Dropdown } from './Dropdown';
-export { Skeleton } from './Skeleton';
-export { LoadingSpinner } from './LoadingSpinner';
+export { Skeleton, SkeletonCard, SkeletonProjectCard, SkeletonStatCard, SkeletonList, SkeletonText } from './Skeleton';
 export { Progress } from './Progress';
 export { EmptyState } from './EmptyState';

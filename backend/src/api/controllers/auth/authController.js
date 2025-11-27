@@ -60,3 +60,20 @@ exports.refreshToken = asyncHandler(async (req, res) => {
   
   successResponse(res, result, 'Token refreshed successfully');
 });
+
+// Forgot password
+exports.forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  await authService.forgotPassword(email);
+  
+  successResponse(res, null, 'Password reset email sent');
+});
+
+// Reset password
+exports.resetPassword = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  await authService.resetPassword(token, password);
+  
+  successResponse(res, null, 'Password reset successful');
+});

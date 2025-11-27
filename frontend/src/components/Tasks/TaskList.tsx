@@ -8,6 +8,7 @@
 import { useState, useMemo } from 'react';
 import { useTasks } from '@/hooks';
 import { TaskCard } from './TaskCard';
+import { SkeletonCard } from '../UI/Skeleton';
 import { Task } from '@/lib';
 
 interface TaskListProps {
@@ -61,9 +62,9 @@ export function TaskList({ projectId, showFilters = true, emptyMessage = 'No tas
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-lg h-32 animate-pulse" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonCard key={i} />
         ))}
       </div>
     );

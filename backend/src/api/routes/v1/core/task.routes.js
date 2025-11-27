@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { task: taskController } = require('../../../controllers');
-const { protect, validators, validate, cache, clearCache } = require('../../middleware');
+const { protect, validators, validate, cache, clearCache } = require('../../../middleware');
 
 // All routes require authentication
 router.use(protect);

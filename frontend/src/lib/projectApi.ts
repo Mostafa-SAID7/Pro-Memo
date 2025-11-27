@@ -228,3 +228,27 @@ class ProjectApiClient {
 }
 
 export const projectApi = new ProjectApiClient();
+
+// Additional helper methods
+export const projectApiHelpers = {
+  async getAllProjects(): Promise<Project[]> {
+    const result = await projectApi.getProjects();
+    return result.data;
+  },
+
+  async getProjectById(id: string): Promise<Project> {
+    return projectApi.getProjectById(id);
+  },
+
+  async createProject(data: Partial<Project>): Promise<Project> {
+    return projectApi.createProject(data);
+  },
+
+  async updateProject(id: string, data: Partial<Project>): Promise<Project> {
+    return projectApi.updateProject(id, data);
+  },
+
+  async deleteProject(id: string): Promise<void> {
+    return projectApi.deleteProject(id);
+  }
+};

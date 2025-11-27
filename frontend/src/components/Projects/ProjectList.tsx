@@ -7,6 +7,7 @@
 import { useState, useMemo } from 'react';
 import { useProjects } from '@/hooks';
 import { ProjectCard } from './ProjectCard';
+import { SkeletonProjectCard } from '../UI/Skeleton';
 
 interface ProjectListProps {
   showFilters?: boolean;
@@ -33,8 +34,8 @@ export function ProjectList({ showFilters = true, emptyMessage = 'No projects fo
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-xl h-48 animate-pulse" />
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonProjectCard key={i} />
         ))}
       </div>
     );

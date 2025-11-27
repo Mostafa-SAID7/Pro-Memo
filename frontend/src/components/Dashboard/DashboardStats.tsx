@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { analyticsApi, DashboardStats as Stats } from '@/lib';
+import { SkeletonStatCard } from '../UI/Skeleton';
 
 interface StatCardProps {
   title: string;
@@ -74,8 +75,8 @@ export function DashboardStats() {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-xl h-32 animate-pulse" />
+        {Array.from({ length: 4 }).map((_, i) => (
+          <SkeletonStatCard key={i} />
         ))}
       </div>
     );

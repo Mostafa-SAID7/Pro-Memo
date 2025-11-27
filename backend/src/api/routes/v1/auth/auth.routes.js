@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { auth: authController } = require('../../../controllers');
-const { protect, validators, validate, authLimiter } = require('../../middleware');
+const { protect, validators, validate, authLimiter } = require('../../../middleware');
 
 // Public routes (with rate limiting)
 router.post('/register', authLimiter, validators.register, validate, authController.register);

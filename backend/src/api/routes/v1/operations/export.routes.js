@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { export: exportController } = require('../../../controllers');
-const { protect, strictLimiter, validators, validate } = require('../../middleware');
+const { protect, strictLimiter, validators, validate } = require('../../../middleware');
 
 // All routes require authentication
 router.use(protect);

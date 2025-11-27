@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { admin: adminController } = require('../../../controllers');
-const { protect, restrictTo, validators, validate } = require('../../middleware');
+const { protect, restrictTo, validators, validate } = require('../../../middleware');
 
 // All routes require authentication and admin role
 router.use(protect);

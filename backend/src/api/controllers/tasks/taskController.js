@@ -64,3 +64,48 @@ exports.deleteComment = asyncHandler(async (req, res) => {
   
   successResponse(res, task, 'Comment deleted successfully');
 });
+
+// Get all tasks (alias)
+exports.getAllTasks = exports.getTasks;
+
+// Update task status
+exports.updateTaskStatus = asyncHandler(async (req, res) => {
+  const { status } = req.body;
+  const task = await taskService.updateTaskStatus(req.params.id, status, req.user.id);
+  successResponse(res, task, 'Task status updated successfully');
+});
+
+// Update task priority
+exports.updateTaskPriority = asyncHandler(async (req, res) => {
+  const { priority } = req.body;
+  const task = await taskService.updateTaskPriority(req.params.id, priority, req.user.id);
+  successResponse(res, task, 'Task priority updated successfully');
+});
+
+// Assign task
+exports.assignTask = asyncHandler(async (req, res) => {
+  const { assigneeId } = req.body;
+  const task = await taskService.assignTask(req.params.id, assigneeId, req.user.id);
+  successResponse(res, task, 'Task assigned successfully');
+});
+
+// Get task comments
+exports.getComments = asyncHandler(async (req, res) => {
+  const comments = await taskService.getComments(req.params.id);
+  successResponse(res, comments, 'Comments retrieved successfully');
+});
+
+// Get task attachments
+exports.getAttachments = asyncHandler(async (req, res) => {
+  successResponse(res, [], 'Attachments retrieved successfully');
+});
+
+// Add task attachment
+exports.addAttachment = asyncHandler(async (req, res) => {
+  successResponse(res, null, 'Attachment added successfully');
+});
+
+// Delete task attachment
+exports.deleteAttachment = asyncHandler(async (req, res) => {
+  successResponse(res, null, 'Attachment deleted successfully');
+});

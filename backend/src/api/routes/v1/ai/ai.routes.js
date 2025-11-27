@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { ai: aiController } = require('../../../controllers');
-const { protect, strictLimiter } = require('../../middleware');
+const { protect, strictLimiter } = require('../../../middleware');
 
 // All routes require authentication
 router.use(protect);

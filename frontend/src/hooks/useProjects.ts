@@ -1,7 +1,7 @@
 // Projects Hook
 
 import { useState, useEffect, useCallback } from 'react';
-import { projectApi, Project, CreateProjectData, UpdateProjectData } from '@/lib';
+import { projectApi, Project } from '@/lib';
 import { useWebSocket } from './useWebSocket';
 
 export function useProjects() {
@@ -14,8 +14,8 @@ export function useProjects() {
     try {
       setLoading(true);
       setError(null);
-      const data = await projectApi.getAllProjects();
-      setProjects(data);
+      const result = await projectApi.getProjects();
+      setProjects(result.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch projects');
     } finally {
@@ -46,7 +46,7 @@ export function useProjects() {
     };
   }, [fetchProjects, on, WS_EVENTS]);
 
-  const createProject = useCallback(async (data: CreateProjectData) => {
+  const createProject = useCallback(async (data: Partial<Project>) => {
     try {
       const newProject = await projectApi.createProject(data);
       setProjects(prev => [newProject, ...prev]);
@@ -56,7 +56,7 @@ export function useProjects() {
     }
   }, []);
 
-  const updateProject = useCallback(async (id: string, data: UpdateProjectData) => {
+  const updateProject = useCallback(async (id: string, data: Partial<Project>) => {
     try {
       const updated = await projectApi.updateProject(id, data);
       setProjects(prev => prev.map(p => p._id === id ? updated : p));

@@ -12,5 +12,8 @@ module.exports = {
   analyticsService: require('./analytics/analyticsService'),
   searchService: require('./search/searchService'),
   aiService: require('./ai/aiService'),
-  activityService: require('./activity/activityService')
+  activityService: require('./activity/activityService'),
+  adminService: require('./admin/adminService'),
+  exportService: require('./export/exportService'),
+  bulkService: require('./bulk/bulkService')
 };

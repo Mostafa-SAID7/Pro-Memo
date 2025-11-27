@@ -64,3 +64,30 @@ exports.updateMemberRole = asyncHandler(async (req, res) => {
   
   successResponse(res, project, 'Member role updated successfully');
 });
+
+// Get all projects (alias)
+exports.getAllProjects = exports.getProjects;
+
+// Get project tasks
+exports.getProjectTasks = asyncHandler(async (req, res) => {
+  const tasks = await projectService.getProjectTasks(req.params.id, req.user.id);
+  successResponse(res, tasks, 'Project tasks retrieved successfully');
+});
+
+// Get project analytics
+exports.getProjectAnalytics = asyncHandler(async (req, res) => {
+  const analytics = await projectService.getProjectAnalytics(req.params.id, req.user.id);
+  successResponse(res, analytics, 'Project analytics retrieved successfully');
+});
+
+// Get project members
+exports.getProjectMembers = asyncHandler(async (req, res) => {
+  const members = await projectService.getProjectMembers(req.params.id, req.user.id);
+  successResponse(res, members, 'Project members retrieved successfully');
+});
+
+// Add project member
+exports.addProjectMember = exports.addMember;
+
+// Remove project member
+exports.removeProjectMember = exports.removeMember;

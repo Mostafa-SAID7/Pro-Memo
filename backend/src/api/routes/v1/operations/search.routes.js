@@ -5,7 +5,7 @@
 const express = require('express');
 const router = express.Router();
 const { search: searchController } = require('../../../controllers');
-const { protect, cache } = require('../../middleware');
+const { protect, cache } = require('../../../middleware');
 
 // All routes require authentication
 router.use(protect);

@@ -25,3 +25,8 @@ exports.deleteUser = asyncHandler(async (req, res) => {
   await userService.deleteUser(req.params.id);
   successResponse(res, null, 'User deleted successfully');
 });
+
+exports.searchUsers = asyncHandler(async (req, res) => {
+  const users = await userService.searchUsers(req.query.q || '');
+  successResponse(res, users, 'Users found');
+});

@@ -10,7 +10,7 @@ export { searchApi } from './searchApi';
 
 // Re-export types
 export type { User, AuthResponse } from './api';
-export type { Project, CreateProjectData, UpdateProjectData } from './projectApi';
+export type { Project } from './projectApi';
 export type { Task, CreateTaskData, UpdateTaskData } from './taskApi';
 export type { DashboardStats, TaskAnalytics, ProjectAnalytics, ProductivityMetrics, Trends } from './analyticsApi';
 export type { AISuggestion, TaskAnalysis, CompletionPrediction } from './aiApi';
