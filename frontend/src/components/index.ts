@@ -1,34 +1,12 @@
-/**
- * Components Index
- * Central export point for all components
- */
+// Components Index - Central export for all components
 
 // UI Components
 export * from './UI';
 
-// Layout Components
-export * from './Layout';
-
-// Form Components
-export * from './Forms';
-
-// Navigation Components
-export * from './Navigation';
-
-// Project Components
-export * from './Project';
-
-// Task Components
-export * from './Task';
-
-// Analytics Components
-export * from './Analytics';
-
-// Search Components
+// Feature Components
+export * from './Tasks';
+export * from './Projects';
+export * from './Dashboard';
 export * from './Search';
-
-// AI Components
+export * from './Notifications';
 export * from './AI';
-
-// Chart Components
-export * from './Charts';

@@ -4,16 +4,13 @@
  */
 
 module.exports = {
-  auth: require('./auth/authService'),
-  project: require('./project/projectService'),
-  task: require('./task/taskService'),
-  user: require('./user/userService'),
-  analytics: require('./analytics/analyticsService'),
-  ai: require('./ai/aiService'),
-  admin: require('./admin/adminService'),
-  search: require('./search/searchService'),
-  export: require('./export/exportService'),
-  bulk: require('./bulk/bulkService'),
-  activity: require('./activity/activityService'),
-  notification: require('./notification/notificationService')
+  authService: require('./auth/authService'),
+  projectService: require('./project/projectService'),
+  taskService: require('./task/taskService'),
+  userService: require('./user/userService'),
+  notificationService: require('./notification/notificationService'),
+  analyticsService: require('./analytics/analyticsService'),
+  searchService: require('./search/searchService'),
+  aiService: require('./ai/aiService'),
+  activityService: require('./activity/activityService')
 };

@@ -6,20 +6,14 @@
 const express = require('express');
 const router = express.Router();
 
-// Import route modules
-const authRoutes = require('./auth.routes');
-const userRoutes = require('./user.routes');
-const projectRoutes = require('./project.routes');
-const taskRoutes = require('./task.routes');
-const analyticsRoutes = require('./analytics.routes');
-const aiRoutes = require('./ai.routes');
-const adminRoutes = require('./admin.routes');
-const searchRoutes = require('./search.routes');
-const exportRoutes = require('./export.routes');
-const bulkRoutes = require('./bulk.routes');
-const activityRoutes = require('./activity.routes');
-const notificationRoutes = require('./notification.routes');
-const healthRoutes = require('./health.routes');
+// Import route modules from subfolders
+const { authRoutes, userRoutes } = require('./auth');
+const { projectRoutes, taskRoutes } = require('./core');
+const { analyticsRoutes } = require('./analytics');
+const { aiRoutes } = require('./ai');
+const { adminRoutes } = require('./admin');
+const { searchRoutes, exportRoutes, bulkRoutes } = require('./operations');
+const { healthRoutes, notificationRoutes, activityRoutes } = require('./system');
 
 // API info endpoint
 router.get('/', (req, res) => {
@@ -47,17 +41,32 @@ router.get('/', (req, res) => {
 });
 
 // Mount routes
+// System routes (public)
 router.use('/health', healthRoutes);
+
+// Auth routes
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
+
+// Core business routes
 router.use('/projects', projectRoutes);
 router.use('/tasks', taskRoutes);
+
+// Analytics routes
 router.use('/analytics', analyticsRoutes);
+
+// AI routes
 router.use('/ai', aiRoutes);
+
+// Admin routes
 router.use('/admin', adminRoutes);
+
+// Operations routes
 router.use('/search', searchRoutes);
 router.use('/export', exportRoutes);
 router.use('/bulk', bulkRoutes);
+
+// System routes (protected)
 router.use('/activities', activityRoutes);
 router.use('/notifications', notificationRoutes);
 

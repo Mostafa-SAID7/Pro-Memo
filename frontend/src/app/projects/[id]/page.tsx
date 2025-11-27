@@ -17,8 +17,10 @@ export default function ProjectDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (params.id) {
     loadProject();
     loadTasks();
+    }
   }, [params.id]);
 
   const loadProject = async () => {

@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import { SparklesIcon, Cancel01Icon } from 'hugeicons-react';
-import { Button } from './Button';
+import { Button } from '../UI/Button';
 
 interface Suggestion {
   type: string;

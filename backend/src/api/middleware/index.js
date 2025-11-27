@@ -3,26 +3,44 @@
  * Central export for all middleware
  */
 
+const auth = require('./auth.middleware');
+const validation = require('./validation.middleware');
+const error = require('./error.middleware');
+const security = require('./security.middleware');
+const logger = require('./logger.middleware');
+const upload = require('./upload.middleware');
+const cache = require('./cache.middleware');
+
 module.exports = {
-  // Auth middleware
-  auth: require('./auth/auth'),
-  roleCheck: require('./auth/roleCheck'),
+  // Auth
+  ...auth,
   
-  // Validation middleware
-  validate: require('./validation/validate'),
-  validators: require('./validation/validators'),
-  
-  // Security middleware
-  security: require('./security/security'),
-  rateLimiter: require('./security/rateLimiter'),
-  
-  // Performance middleware
-  performance: require('./performance/performance'),
-  cache: require('./performance/cache'),
+  // Validation
+  validate: validation.validate,
+  validators: validation.validators,
   
   // Error handling
-  errorHandler: require('./error/errorHandler'),
+  errorHandler: error.errorHandler,
+  notFound: error.notFound,
+  errorLogger: logger.errorLogger,
   
-  // File upload
-  upload: require('./upload/upload')
+  // Security
+  sanitizeInput: security.sanitizeInput,
+  securityHeaders: security.securityHeaders,
+  apiLimiter: security.apiLimiter,
+  authLimiter: security.authLimiter,
+  strictLimiter: security.strictLimiter,
+  
+  // Logger
+  requestLogger: logger.requestLogger,
+  
+  // Upload
+  upload: upload.upload,
+  uploadSingle: upload.uploadSingle,
+  uploadMultiple: upload.uploadMultiple,
+  uploadFields: upload.uploadFields,
+  
+  // Cache
+  cache: cache.cache,
+  clearCache: cache.clearCache
 };

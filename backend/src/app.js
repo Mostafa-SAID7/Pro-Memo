@@ -15,7 +15,7 @@ const {
   securityHeaders,
   requestLogger,
   errorLogger
-} = require('./middleware');
+} = require('./api/middleware');
 
 const app = express();
 
